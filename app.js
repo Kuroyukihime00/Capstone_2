@@ -1,15 +1,16 @@
 // app.js
 const express = require('express');
 const app = express();
-const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 
-dotenv.config();
+// Middleware
+app.use(bodyParser.json());
 
-app.use(express.json());
+// Routes
+const periodeRoutes = require('./routes/periodeRoutes');
+app.use('/api', periodeRoutes);
 
-const studentRoutes = require('./routes/studentRoutes');
-app.use('/api/student', studentRoutes);
-
+// Listen on port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
