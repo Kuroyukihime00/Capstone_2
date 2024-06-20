@@ -1,38 +1,57 @@
--- Membuat database
-CREATE DATABASE scholarship_db;
-GO
-
--- Menggunakan database yang baru dibuat
-USE scholarship_db;
-GO
-
--- Membuat tabel users
-CREATE TABLE users (
-  id INT IDENTITY(1,1) PRIMARY KEY,
-  name VARCHAR(100),
-  email VARCHAR(100) UNIQUE,
-  role VARCHAR(50) CHECK (role IN ('admin', 'student', 'faculty', 'program')),
-  password VARCHAR(100)
+CREATE TABLE periode (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(255) NOT NULL
 );
-GO
 
--- Membuat tabel scholarships
-CREATE TABLE scholarships (
-  id INT IDENTITY(1,1) PRIMARY KEY,
-  student_id INT,
-  type VARCHAR(50) CHECK (type IN ('prestasi', 'bantuan_ekonomi')),
-  gpa DECIMAL(3, 2),
-  documents TEXT,
-  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-  FOREIGN KEY (student_id) REFERENCES users(id)
+CREATE TABLE beasiswa (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(255) NOT NULL
 );
-GO
 
--- Membuat tabel periods
-CREATE TABLE periods (
-  id INT IDENTITY(1,1) PRIMARY KEY,
-  start_date DATE,
-  end_date DATE,
-  active BIT DEFAULT 0
+CREATE TABLE periode_beasiswa (
+    periode_id INT,
+    beasiswa_id INT,
+    start DATE,
+    end DATE,
+    active BOOLEAN,
+    PRIMARY KEY (periode_id, beasiswa_id),
+    FOREIGN KEY (periode_id) REFERENCES periode(id),
+    FOREIGN KEY (beasiswa_id) REFERENCES beasiswa(id)
 );
-GO
+
+CREATE TABLE mahasiswa (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE beasiswa_detail (
+    mahasiswa_id INT,
+    periode_id INT,
+    beasiswa_id INT,
+    IPK DECIMAL(3, 2),
+    poin_portfolio INT,
+    status_1 BOOLEAN,
+    status_2 BOOLEAN,
+    PRIMARY KEY (mahasiswa_id, periode_id, beasiswa_id),
+    FOREIGN KEY (mahasiswa_id) REFERENCES mahasiswa(id),
+    FOREIGN KEY (periode_id) REFERENCES periode(id),
+    FOREIGN KEY (beasiswa_id) REFERENCES beasiswa(id)
+);
+
+CREATE TABLE jenis_doc (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE detail_file (
+    mahasiswa_id INT,
+    periode_id INT,
+    beasiswa_id INT,
+    jenis_doc_id INT,
+    path VARCHAR(255),
+    PRIMARY KEY (mahasiswa_id, periode_id, beasiswa_id, jenis_doc_id),
+    FOREIGN KEY (mahasiswa_id) REFERENCES mahasiswa(id),
+    FOREIGN KEY (periode_id) REFERENCES periode(id),
+    FOREIGN KEY (beasiswa_id) REFERENCES beasiswa(id),
+    FOREIGN KEY (jenis_doc_id) REFERENCES jenis_doc(id)
+);
