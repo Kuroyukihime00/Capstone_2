@@ -1,16 +1,34 @@
-// models/Scholarship.js
-const connection = require('../config/db');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const Scholarship = {
-  create: (data, callback) => {
-    const query = 'INSERT INTO scholarships SET ?';
-    connection.query(query, data, callback);
-  },
-  findByStudentId: (studentId, callback) => {
-    const query = 'SELECT * FROM scholarships WHERE student_id = ?';
-    connection.query(query, [studentId], callback);
-  },
-  // Tambahkan fungsi lain sesuai kebutuhan
-};
+const Scholarship = sequelize.define(
+	"Scholarship",
+	{
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		studentId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		programId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		status: {
+			type: DataTypes.STRING,
+			defaultValue: "pending",
+		},
+		approvedBy: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+		},
+	},
+	{
+		tableName: "scholarships",
+	}
+);
 
 module.exports = Scholarship;

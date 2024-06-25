@@ -1,20 +1,21 @@
-// controllers/studentController.js
-const Scholarship = require('../models/Scholarship');
+const Scholarship = require("../models/Scholarship");
 
-exports.createScholarship = (req, res) => {
-  const data = req.body;
-  Scholarship.create(data, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(201).send(results);
-  });
+exports.createScholarship = async (req, res) => {
+	try {
+		const data = req.body;
+		const scholarship = await Scholarship.create(data);
+		res.status(201).json(scholarship);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };
 
-exports.getScholarshipsByStudent = (req, res) => {
-  const studentId = req.params.studentId;
-  Scholarship.findByStudentId(studentId, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(results);
-  });
+exports.getScholarshipsByStudent = async (req, res) => {
+	try {
+		const studentId = req.params.studentId;
+		const scholarships = await Scholarship.findAll({ where: { studentId } });
+		res.status(200).json(scholarships);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };
-
-// Tambahkan fungsi lain sesuai kebutuhan

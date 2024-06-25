@@ -1,51 +1,36 @@
-// facultyController.js
-const Scholarship = require('../models/Scholarship');
-const Period = require('../models/Period');
+const Scholarship = require("../models/Scholarship");
 
-// Menampilkan daftar mahasiswa yang mengajukan beasiswa per periode
-exports.getScholarshipsByPeriod = (req, res) => {
-  const periodId = req.params.periodId;
-  Scholarship.findByPeriodId(periodId, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(results);
-  });
+exports.getApplicationsByPeriod = async (req, res) => {
+	try {
+		const periodId = req.params.periodId;
+		const applications = await Scholarship.findAll({ where: { periodId } });
+		res.status(200).json(applications);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };
 
-// Menyetujui atau menolak pengajuan beasiswa
-exports.approveScholarship = (req, res) => {
-  const scholarshipId = req.params.scholarshipId;
-  const status = req.body.status; // 'approved' atau 'rejected'
+exports.approveApplication = async (req, res) => {
+	try {
+		const applicationId = req.params.applicationId;
+		const scholarship = await Scholarship.findByPk(applicationId);
 
-  Scholarship.updateStatus(scholarshipId, status, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(results);
-  });
-};
+		if (!scholarship) {
+			return res.status(404).json({ message: "Scholarship not found" });
+		}
 
-// Menampilkan daftar periode pengajuan beasiswa
-exports.getPeriods = (req, res) => {
-  Period.getAll((err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(results);
-  });
-};
+		if (scholarship.status !== "pending") {
+			return res
+				.status(400)
+				.json({ message: "Scholarship is not pending for approval" });
+		}
 
-// Menambahkan periode pengajuan beasiswa baru
-exports.createPeriod = (req, res) => {
-  const data = req.body;
-  Period.create(data, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(201).send(results);
-  });
-};
+		scholarship.status = "approved";
+		scholarship.approvedBy = req.body.programId;
+		await scholarship.save();
 
-// Mengubah status aktif/nonaktif periode pengajuan beasiswa
-exports.togglePeriodStatus = (req, res) => {
-  const periodId = req.params.periodId;
-  const active = req.body.active; // true atau false
-
-  Period.updateStatus(periodId, active, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.status(200).send(results);
-  });
+		res.status(200).json(scholarship);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };

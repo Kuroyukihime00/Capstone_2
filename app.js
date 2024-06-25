@@ -1,17 +1,25 @@
-// app.js
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
+require("dotenv").config();
 
-// Middleware
+const app = express();
 app.use(bodyParser.json());
 
-// Routes
-const periodeRoutes = require('./routes/periodeRoutes');
-app.use('/api', periodeRoutes);
+const periodeRoutes = require("./routes/periodeRoutes");
+const studentRoutes = require("./routes/studentRoutes");
+const facultyRoutes = require("./routes/facultyRoutes");
 
-// Listen on port
+app.use("/api/periodes", periodeRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/faculties", facultyRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+	console.error(err.stack);
+	res.status(500).send("Something broke!");
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+	console.log(`Server is running on port ${PORT}`);
 });

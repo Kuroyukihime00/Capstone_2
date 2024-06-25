@@ -1,0 +1,16 @@
+{
+	"development": {
+		"username": "your_mysql_username",
+		"password": "your_mysql_password",
+		"database": "scholarship_db",
+		"host": "localhost",
+		"dialect": "mysql"
+	},
+	"production": {
+		"username": "your_mysql_username",
+		"password": "your_mysql_password",
+		"database": "scholarship_db",
+		"host": "localhost",
+		"dialect": "mysql"
+	}
+}
